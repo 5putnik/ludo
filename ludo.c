@@ -20,7 +20,9 @@ int iNIPOS_X[BNUM],
 
 typedef struct st_block
 {
-    unsigned x,y;
+    unsigned x,
+             y,
+             end;
 }block;
 typedef struct st_player
 {
@@ -31,6 +33,8 @@ player p[PNUM];
 
 void printmap(void);
 void searchfor(unsigned y);
+void bmove(int plr, int blk);
+
 int main(void)
 {
     unsigned i, j;
@@ -50,6 +54,7 @@ int main(void)
             if(px) py ^= 1;
             p[i].b[j].x = iNIPOS_X[i] + px;
             p[i].b[j].y = iNIPOS_Y[i] + py;
+            p[i].b[j].end = 0;
         }
     printmap();
     return 0;
@@ -58,51 +63,37 @@ int main(void)
 void printmap(void)
 {
     pf(".-----------------------.---.---.---.-----------------------. ");ln;
-    pf("|                       |   |   |   |                       | ");
-    searchfor(1);ln;
-    pf("|                       |---");pcor(1);pf("+---+---|");pcor(0);pf("                       | ");ln;
-    pf("|                       |   ");pcor(1);pf("|   |");pcor(0);pf("   |                       | ");
-    searchfor(2);ln;
-    pf("|       --- ---         |---");pcor(1);pf("+---+");pcor(0);pf("---|       --- ---         | ");ln;
-    pf("|      |   |   |        |   ");pcor(1);pf("|   |");pcor(0);pf("   |      |   |   |        | ");
-    searchfor(3);ln;
+    pf("|                       |   |   |   |                       | ");searchfor(1);ln;
+    pf("|                       |---");pcor(1);pf("+---+---.");pcor(0);pf("                       | ");ln;
+    pf("|                       |   ");pcor(1);pf("|   |   |");pcor(0);pf("                       | ");searchfor(2);ln;
+    pf("|       --- ---         |---");pcor(1);pf("+---+---.");pcor(0);pf("       --- ---         | ");ln;
+    pf("|      |   |   |        |   ");pcor(1);pf("|   |");pcor(0);pf("   |      |   |   |        | ");searchfor(3);ln;
     pf("|       ---+---         |---");pcor(1);pf("+---+");pcor(0);pf("---|       ---+---         | ");ln;
-    pf("|      |   |   |        |   ");pcor(1);pf("|   |");pcor(0);pf("   |      |   |   |        | ");
-    searchfor(4);ln;
+    pf("|      |   |   |        |   ");pcor(1);pf("|   |");pcor(0);pf("   |      |   |   |        | ");searchfor(4);ln;
     pf("|       --- ---         |---");pcor(1);pf("+---+");pcor(0);pf("---|       --- ---         | ");ln;
-    pf("|                       |   ");pcor(1);pf("|   |");pcor(0);pf("   |                       | ");
-    searchfor(5);ln;
+    pf("|                       |   ");pcor(1);pf("|   |");pcor(0);pf("   |                       | ");searchfor(5);ln;
     pf("|                       |---");pcor(1);pf("+---+");pcor(0);pf("---|                       | ");ln;
-    pf("|                       |   ");pcor(1);pf("|   |");pcor(0);pf("   |                       | ");
-    searchfor(6);ln;
-    pcor(2);pf("|---.");pcor(0);pf("---.---.---.---.---+---+---+---+---.---.---.---.---.---| ");ln;
-    pcor(2);pf("|   |");pcor(0);pf("   |   |   |   |   |   |   |   |   |   |   |   |   |   | ");
-    searchfor(7);ln;
-    pcor(2);pf("|---+---+---+---+---+---+");pcor(0);pf("---+---+---+---+---+---+---+---+---| ");ln;
-    pf("|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | ");
-    searchfor(8);ln;
-    pf("|---+---+---+---+---+---+---+---+---+---+---+---+---+---+---| ");ln;
-    pf("|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | ");
-    searchfor(9);ln;
-    pf("|---^---^---^---^---^---+---+---+---+---^---^---^---^---^---| ");ln;
-    pf("|                       |   ");pcor(4);pf("|   |");pcor(0);pf("   |                       | ");
-    searchfor(10);ln;
+    pf("|                       |   ");pcor(1);pf("|   |");pcor(0);pf("   |                       | ");searchfor(6);ln;
+    pf("|---");pcor(2);pf(".---.");pcor(0);pf("---.---.---.---+---");pcor(1);pf("+---+");pcor(0);pf("---+---.---.---.---.---.---| ");ln;
+    pf("|   ");pcor(2);pf("|   |");pcor(0);pf("   |   |   |   |   ");pcor(1);pf("|   |");pcor(0);pf("   |   |   |   |   |   |   | ");searchfor(7);ln;
+    pf("|---");pcor(2);pf("+---+---+---+---+---+---");pcor(0);pf("+");pcor(1);pf("---");pcor(0);pf("+");pcor(3);pf("---+---+---+---+---+---+");pcor(0);pf("---| ");ln;
+    pf("|   ");pcor(2);pf("|   |   |   |   |   |   |");pcor(3);pf("   |   |   |   |   |   |   |");pcor(0);pf("   | ");searchfor(8);ln;
+    pf("|---");pcor(2);pf("+---+---+---+---+---+---");pcor(0);pf("+");pcor(4);pf("---");pcor(0);pf("+");pcor(3);pf("---+---+---+---+---+---+");pcor(0);pf("---| ");ln;
+    pf("|   |   |   |   |   |   |   ");pcor(4);pf("|   |");pcor(0);pf("   |   |   |   |   ");pcor(3);pf("|   |");pcor(0);pf("   | ");searchfor(9);ln;
+    pf("|---^---^---^---^---^---+---");pcor(4);pf("+---+");pcor(0);pf("---+---^---^---^---");pcor(3);pf(".---.");pcor(0);pf("---| ");ln;
+    pf("|                       |   ");pcor(4);pf("|   |");pcor(0);pf("   |                       | ");searchfor(10);ln;
     pf("|                       |---");pcor(4);pf("+---+");pcor(0);pf("---|                       | ");ln;
-    pf("|                       |   ");pcor(4);pf("|   |");pcor(0);pf("   |                       | ");
-    searchfor(11);ln;
+    pf("|                       |   ");pcor(4);pf("|   |");pcor(0);pf("   |                       | ");searchfor(11);ln;
     pf("|       --- ---         |---");pcor(4);pf("+---+");pcor(0);pf("---|       --- ---         | ");ln;
-    pf("|      |   |   |        |   ");pcor(4);pf("|   |");pcor(0);pf("   |      |   |   |        | ");
-    searchfor(12);ln;
+    pf("|      |   |   |        |   ");pcor(4);pf("|   |");pcor(0);pf("   |      |   |   |        | ");searchfor(12);ln;
     pf("|       ---+---         |---");pcor(4);pf("+---+");pcor(0);pf("---|       ---+---         | ");ln;
-    pf("|      |   |   |        |   ");pcor(4);pf("|   |");pcor(0);pf("   |      |   |   |        | ");
-    searchfor(13);ln;
-    pf("|       --- ---         |---");pcor(4);pf("+---+");pcor(0);pf("---|       --- ---         | ");ln;
-    pf("|                       |   ");pcor(4);pf("|   |");pcor(0);pf("   |                       | ");
-    searchfor(14);ln;
-    pf("|                       ");pcor(4);pf("|---+---+");pcor(0);pf("---|                       | ");ln;
-    pf("|                       ");pcor(4);pf("|   |   |");pcor(0);pf("   |                       | ");
+    pf("|      |   |   |        |   ");pcor(4);pf("|   |");pcor(0);pf("   |      |   |   |        | ");searchfor(13);ln;
+    pf("|       --- ---         ");pcor(4);pf(".---+---+");pcor(0);pf("---|       --- ---         | ");ln;
+    pf("|                       ");pcor(4);pf("|   |   |");pcor(0);pf("   |                       | ");searchfor(14);ln;
+    pf("|                       ");pcor(4);pf(".---+---+");pcor(0);pf("---|                       | ");ln;
+    pf("|                       |   |   |   |                       | ");
     searchfor(15);ln;
-    pf("^-----------------------");pcor(4);pf("^---^---^");pcor(0);pf("---^-----------------------^ ");ln;
+    pf("^-----------------------^---^---^---^-----------------------^ ");ln;
     return;
 }
 
@@ -127,4 +118,11 @@ void searchfor(unsigned y)
         }
     }
     return;
+}
+
+void bmove(int plr, int blk)
+{
+    int xend[PNUM] = {0},
+        yend[PNUM] = {0};
+    xend[0]
 }
