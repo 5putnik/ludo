@@ -1,13 +1,15 @@
 # Ludo v0.1
 
-## Author: Hugo Foneca
+## Author: Hugo Fonseca
 
 The game consists in 
 
 
 
 ##Game Map
+
 ~~~~~~~~~~~~~
+
 .-----------------------.---.---.---.-----------------------.
 |                       |   |   |   |                       |
 |                       |---+---+---|                       |
